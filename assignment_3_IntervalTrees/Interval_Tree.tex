@@ -1,0 +1,229 @@
+\documentclass[11pt]{article}
+
+\usepackage[margin=0.5in]{geometry}
+\usepackage{fancyhdr}
+\usepackage{graphicx}
+\pagestyle{fancy}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{algorithm}
+\usepackage[noend]{algpseudocode}
+\lhead{CSN-212 Assignment \#3}
+\chead{Gaurav Kumar Gupta, ECE IV, 13116027}
+\rhead{January 13, 2017}
+
+
+\begin{document}
+\begin{algorithm}
+\caption{INSERT,DELETE,SEARCH INTERVAL TREES}\label{euclid}
+\begin{algorithmic}[1]
+\Procedure{LEFT-ROTATE}{T,x}
+\State $y \gets right[x]$
+\State $right[x] \gets left[y]$
+\If {$left[y] \neq \textit{NIL}$}
+\State $p[left[y]] \gets x$ \Comment{p is parent}
+\EndIf
+\State $p[y] \gets p[x]$
+\If{$p[x] \gets \textit{NIL}$}
+\State $root[T] \gets y$
+\ElsIf {$x = left[p[x]]$}
+\State $left[p[x]] \gets y$
+\Else 
+\State $right[p[x]] \gets y$
+\EndIf
+\State $ left[y] \gets x$
+\State $ p[x] \gets y$
+\State $max[x]=MAX(max[left[x]],max[right[x]],max[x])$ \Comment{reconfiguring the augmented values}
+\State $max[y]=MAX(max[left[y]],max[right[y]],max[y])$
+\State $max[p[y]]=MAX(max[left[p[y]]],max[right[p[y]]],max[p[y]])$
+\EndProcedure
+\\
+\Procedure{RIGHT-ROTATE}{T,y} \Comment {analogous to LEFT-ROTATE}
+\State $x \gets left[y]$
+\State $left[y] \gets right[x]$
+\If {$right[x] \neq \textit{NIL}$}
+\State $p[right[x]] \gets y$
+\EndIf
+\State $p[x] \gets p[y]$
+\If{$p[y] \gets \textit{NIL}$}
+\State $root[T] \gets x$
+\ElsIf {$y = right[p[y]]$}
+\State $right[p[y]] \gets x$
+\Else 
+\State $left[p[y]] \gets x$
+\EndIf
+\State $ right[x] \gets y$
+\State $ p[y] \gets x$
+\State $max[x]=MAX(max[left[x]],max[right[x]],max[x])$
+\State $max[y]=MAX(max[left[y]],max[right[y]],max[y])$
+\State $max[p[x]]=MAX(max[left[p[x]]],max[right[p[x]]],max[p[x]])$
+\EndProcedure
+\\
+\Procedure{BST-INSERT}{T,z}
+\State $y \gets \textit{NIL}$
+\State $x \gets root[T]$
+\While{$x \neq \textit{NIL}$}
+\State $ y \gets x$
+\If{$low[z] < low[x]$}
+\State $x \gets left[x]$
+\Else
+\State $x \gets right[x]$
+\EndIf
+\EndWhile
+\State $p[z] \gets y$
+\If{$y = \textit{NIL}$}
+\State $root[T] \gets z$ \Comment{ z is the only node}
+\ElsIf{$low[z]<low[y]$}\Comment{setting up the pointers to z}
+\State $left[y] \gets z$
+\Else
+\State $right[y] \gets z$
+\EndIf
+\State $max[z]=high[z]$\Comment{setting up augmented value of inserted node}
+\EndProcedure
+\\
+\algstore{bkbreak}
+\end{algorithmic}
+\end{algorithm}
+\addtocounter{algorithm}{-1}
+\begin{algorithm}[h]
+\begin{algorithmic}[1]
+\algrestore{bkbreak}
+\Procedure{RB-INSERT}{T,x}\Comment{inserting a node in interval(Red Black) tree}
+\State $BST-INSERT(T,x)$ \Comment{First insert x as normally inserted into BST and color it red}
+\State $color[x] \gets RED$
+\While{$ x \neq root[T] \textit{ and } color[p[x]] = RED$}
+\If{$p[x]=left[p[p[x]]]$}
+\State $y \gets right[p[p[x]]]$ \Comment{uncle}
+\If {$color[y] =RED$} \Comment{Case a}
+\State $color[p[x]] \gets BLACK$
+\State $color[y] \gets BLACK$
+\State $color[p[p[x]]] \gets RED$
+\State $x \gets p[p[x]]$ \Comment{Change x to grandparent}
+\ElsIf{$x=right[p[x]]$}\Comment{Case b:Left Right Case}
+\State $x \gets p[x]$
+\State $LEFT-ROTATE(T,x)$
+\State $color[p[x]] \gets BLACK$\Comment{Follow Case b: Left Left Case}
+\State $color[p[p[x]]] \gets RED$
+\State $RIGHT-ROTATE[T,p[p[x]]]$
+\Else \Comment{Case b: Left Left Case}
+\State $color[p[x]] \gets BLACK$
+\State $color[p[p[x]]] \gets RED$
+\State $RIGHT-ROTATE[T,p[p[x]]]$
+\EndIf
+\Else
+\State (do the same thing in \textbf{then in line 94} clause with "right" and "left" swapped) \Comment{Case b: Right Left and Right Right Case}
+\EndIf
+\EndWhile
+\State $color[root[T]] \gets BLACK$ \Comment{Since root is always black}
+
+\EndProcedure
+\\
+\Procedure{RB-DELETE}{T,z}\Comment{Deleting a node in RB-Tree}
+\If {$left[z]=nil[T] \textit{ or } right[z]=nil[T]$}
+\State $y \gets z$
+\Else
+\State $ y \gets RB-SUCCESSOR(z)$
+\EndIf
+\If{$left[y] \neq nil[T]$}
+\State $x \gets left[y]$
+\Else
+\State $x \gets right[y]$
+\EndIf
+\State $p[x] \gets p[y]$
+\If{$p[y] =nil[T]$}
+\State $root[T] \gets x$
+\ElsIf{$y = left[p[y]]$}
+\State $left[p[y]] \gets x$
+\Else
+\State $right[p[y]] \gets x$
+\EndIf
+\If{$y \neq z$}
+\State $low[z] \gets low[y]$
+\EndIf
+\If{$color[y]=BLACK$}
+\State $RB-DELETE-FIXUP(T,x)$
+\EndIf
+\Return $y$
+\EndProcedure
+
+\Procedure{RB-SUCCESSOR}{x}\Comment{helper for finding successor for a node in tree}
+\If{$right[x] \neq NIL$}
+\Return $RB-MINIMUM(right[x])$
+\EndIf
+\State $ y \gets p[x]$
+\While{$y \neq NIL \textit{ and }x =right[y]$}
+\State $ x \gets y$
+\State $ y\gets p[y]$
+\EndWhile
+\Return $y$
+\\
+\Procedure{RB-MINIMUM}{x}\Comment{helper for finding minimum in tree}
+\While{$left[x] \neq NIL$}
+\State $x \gets left[x]$
+\EndWhile
+\Return $x$
+\EndProcedure
+\\
+\algstore{bkbreak}
+\end{algorithmic}
+\end{algorithm}
+\addtocounter{algorithm}{-1}
+\begin{algorithm}[h]
+\begin{algorithmic}[1]
+\algrestore{bkbreak}
+\EndProcedure
+\Procedure{RB-DELETE-FIXUP}{T,x}
+\While{$ x \neq root[T] \textit{ and } color[x]=BLACK$}
+\If{$x=left[p[x]]$}
+\State $w \gets right[p[x]]$
+\If{$color[x]=RED$}
+\State $color[w] \gets BLACK$
+\State $color[p[x] \gets RED$
+\State $LEFT-ROTATE(T,p[x])$
+\State $w \gets right[p[x]]$
+\EndIf
+\If{$color[left[w]]=BLACK \textit{ and } color[right[w]]=BLACK$}
+\State $color[w] \gets RED$
+\State $ x \gets p[x]$
+\ElsIf{$color[right[w]]=BLACK$}
+\State $color[left[w] \gets BLACK$
+\State $color[w] \gets RED$
+\State $ RIGHT-ROTATE(T,w)$
+\State $w \gets right[p[x]]$
+\Else
+\State $color[w] \gets color[p[x]]$
+\State $color[p[x]] \gets BLACK$
+\State $color[right[w]] \gets BLACK$
+\State $LEFT-ROTATE(T,p[x])$
+\State $x \gets root(T)$
+\EndIf
+\Else
+\State (same as \textbf{then} clause with "right" and "left" exchanged)
+\EndIf
+\EndWhile
+\State $color[x] \gets BLACK$
+\EndProcedure
+\\
+\algstore{bkbreak}
+\end{algorithmic}
+\end{algorithm}
+\addtocounter{algorithm}{-1}
+\begin{algorithm}[h]
+\begin{algorithmic}[1]
+\algrestore{bkbreak}
+\Procedure{SEARCH}{root,interval} \Comment{interval to be searched has attributes low and high}
+\If{$root=\textit{ NULL }$}
+\Return $NULL$
+\EndIf
+\If{$Interval[root].low \leq interval.high \textit{ and } interval.low \leq Interval[root].high$} \Comment{Checking for overlaps}
+\Return $Interval[root]$
+\EndIf
+\If{$left[root] \neq \textit{ NULL and } max[left[root]] \geq interval.low$}
+\Return $SEARCH(left[root],interval)$\Comment{ interval may overlap with an interval in left subtree}
+\EndIf
+\Return $SEARCH(right[root],interval)$\Comment{Otherwise recur for right subtree} 
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+\end{document}
