@@ -21,6 +21,19 @@
 \begin{algorithm}[h]
 \caption{INSERT,DELETE,SEARCH INTERVAL TREES}\label{euclid}
 \begin{algorithmic}[1]
+\Procedure{SEARCH}{root,interval} \Comment{interval to be searched has attributes low and high}
+\If{$root=\textit{ NULL }$}
+\Return $NULL$
+\EndIf
+\If{$Interval[root].low \leq interval.high \textit{ and } interval.low \leq Interval[root].high$} \Comment{Checking for overlaps}
+\Return $Interval[root]$
+\EndIf
+\If{$left[root] \neq \textit{ NULL and } max[left[root]] \geq interval.low$}
+\Return $SEARCH(left[root],interval)$\Comment{ interval may overlap with an interval in left subtree}
+\EndIf
+\Return $SEARCH(right[root],interval)$\Comment{Otherwise recur for right subtree} 
+\EndProcedure
+\\
 \Procedure{LEFT-ROTATE}{T,x}
 \State $y \gets right[x]$
 \State $right[x] \gets left[y]$
@@ -63,6 +76,13 @@
 \State $max[parent[x]]=MAX(max[left[parent[x]]],max[right[parent[x]]],high[parent[x]])$
 \EndProcedure
 \\
+\algstore{bkbreak}
+\end{algorithmic}
+\end{algorithm}
+\addtocounter{algorithm}{-1}
+\begin{algorithm}[h]
+\begin{algorithmic}[1]
+\algrestore{bkbreak}
 \Procedure{BST-INSERT}{T,z}
 \State $y \gets \textit{NIL}$
 \State $x \gets root[T]$
@@ -85,13 +105,7 @@
 \State $max[z]=high[z]$\Comment{setting up augmented value of inserted node}
 \EndProcedure
 \\
-\algstore{bkbreak}
-\end{algorithmic}
-\end{algorithm}
-\addtocounter{algorithm}{-1}
-\begin{algorithm}[h]
-\begin{algorithmic}[1]
-\algrestore{bkbreak}
+
 \Procedure{RB-INSERT}{T,x}\Comment{inserting a node in interval(Red Black) tree}
 \State $BST-INSERT(T,x)$ \Comment{First insert x as normally inserted into BST and color it red}
 \State $color[x] \gets RED$
@@ -115,13 +129,20 @@
 \State $RIGHT-ROTATE[T,parent[parent[x]]]$
 \EndIf
 \Else
-\State (do the same thing in \textbf{then in line 59} clause with "right" and "left" swapped) \Comment{Case b: Right Left and Right Right Case}
+\State (do the same thing in \textbf{then in line 64} clause with "right" and "left" swapped) \Comment{Case b: Right Left and Right Right Case}
 \EndIf
 \EndWhile
 \State $color[root[T]] \gets BLACK$ \Comment{Since root is always black}
 
 \EndProcedure
 \\
+\algstore{bkbreak}
+\end{algorithmic}
+\end{algorithm}
+\addtocounter{algorithm}{-1}
+\begin{algorithm}[h]
+\begin{algorithmic}[1]
+\algrestore{bkbreak}
 \Procedure{RB-DELETE}{T,z}\Comment{Deleting a node in RB-Tree}
 \If {$left[z]=nil[T] \textit{ or } right[z]=nil[T]$} \Comment{z has no or 1 child}
 \State $y \gets z$
@@ -152,14 +173,7 @@
 \EndIf
 \Return $y$
 \EndProcedure
-
-\algstore{bkbreak}
-\end{algorithmic}
-\end{algorithm}
-\addtocounter{algorithm}{-1}
-\begin{algorithm}[h]
-\begin{algorithmic}[1]
-\algrestore{bkbreak}
+\\
 \Procedure{RB-SUCCESSOR}{x}\Comment{helper for finding successor for a node in tree}
 \If{$right[x] \neq NIL$}
 \Return $RB-MINIMUM(right[x])$
@@ -170,6 +184,7 @@
 \State $ y\gets parent[y]$
 \EndWhile
 \Return $y$
+\EndProcedure
 \\
 \Procedure{RB-MINIMUM}{x}\Comment{helper for finding minimum in tree}
 \While{$left[x] \neq NIL$}
@@ -178,8 +193,14 @@
 \Return $x$
 \EndProcedure
 \\
+\algstore{bkbreak}
+\end{algorithmic}
+\end{algorithm}
+\addtocounter{algorithm}{-1}
+\begin{algorithm}[h]
+\begin{algorithmic}[1]
+\algrestore{bkbreak}
 
-\EndProcedure
 \Procedure{RB-DELETE-CORRECTION}{T,x}
 \While{$ x \neq root[T] \textit{ and } color[x]=BLACK$}
 \If{$x=left[parent[x]]$}\Comment{assume x has double black}
@@ -211,31 +232,14 @@
 \State $x \gets root(T)$
 \EndIf
 \Else
-\State (do the same thing in \textbf{then in line 116} clause with "right" and "left" swapped) \Comment{Case b: Left Left and Left Right Case}
+\State (do the same thing in \textbf{then in line 122} clause with "right" and "left" swapped) \Comment{Case b: Left Left and Left Right Case}
 \EndIf
 \EndWhile
 \State $color[x] \gets BLACK$
 \EndProcedure
 \\
-\algstore{bkbreak}
-\end{algorithmic}
-\end{algorithm}
-\addtocounter{algorithm}{-1}
-\begin{algorithm}[h]
-\begin{algorithmic}[1]
-\algrestore{bkbreak}
-\Procedure{SEARCH}{root,interval} \Comment{interval to be searched has attributes low and high}
-\If{$root=\textit{ NULL }$}
-\Return $NULL$
-\EndIf
-\If{$Interval[root].low \leq interval.high \textit{ and } interval.low \leq Interval[root].high$} \Comment{Checking for overlaps}
-\Return $Interval[root]$
-\EndIf
-\If{$left[root] \neq \textit{ NULL and } max[left[root]] \geq interval.low$}
-\Return $SEARCH(left[root],interval)$\Comment{ interval may overlap with an interval in left subtree}
-\EndIf
-\Return $SEARCH(right[root],interval)$\Comment{Otherwise recur for right subtree} 
-\EndProcedure
+
+
 \end{algorithmic}
 \end{algorithm}
 
