@@ -14,49 +14,53 @@
 
 
 \begin{document}
-\begin{algorithm}
+\textbf{References:}\\
+1. https://www.cs.purdue.edu/homes/ayg/CS251/slides/chap13c.pdf
+\\
+2. Introduction to Algorithms 3rd Edition by Clifford Stein, Thomas H. Cormen, Charles E. Leiserson, Ronald L. Rivest
+\begin{algorithm}[h]
 \caption{INSERT,DELETE,SEARCH INTERVAL TREES}\label{euclid}
 \begin{algorithmic}[1]
 \Procedure{LEFT-ROTATE}{T,x}
 \State $y \gets right[x]$
 \State $right[x] \gets left[y]$
 \If {$left[y] \neq \textit{NIL}$}
-\State $p[left[y]] \gets x$ \Comment{p is parent}
+\State $parent[left[y]] \gets x$ 
 \EndIf
-\State $p[y] \gets p[x]$
-\If{$p[x] \gets \textit{NIL}$}
+\State $parent[y] \gets parent[x]$
+\If{$parent[x] \gets \textit{NIL}$}
 \State $root[T] \gets y$
-\ElsIf {$x = left[p[x]]$}
-\State $left[p[x]] \gets y$
+\ElsIf {$x = left[parent[x]]$}
+\State $left[parent[x]] \gets y$
 \Else 
-\State $right[p[x]] \gets y$
+\State $right[parent[x]] \gets y$
 \EndIf
 \State $ left[y] \gets x$
-\State $ p[x] \gets y$
-\State $max[x]=MAX(max[left[x]],max[right[x]],max[x])$ \Comment{reconfiguring the augmented values}
-\State $max[y]=MAX(max[left[y]],max[right[y]],max[y])$
-\State $max[p[y]]=MAX(max[left[p[y]]],max[right[p[y]]],max[p[y]])$
+\State $ parent[x] \gets y$
+\State $max[x]=MAX(max[left[x]],max[right[x]],high[x])$ \Comment{reconfiguring the augmented values}
+\State $max[y]=MAX(max[left[y]],max[right[y]],high[y])$
+\State $max[parent[y]]=MAX(max[left[parent[y]]],max[right[parent[y]]],high[parent[y]])$
 \EndProcedure
 \\
 \Procedure{RIGHT-ROTATE}{T,y} \Comment {analogous to LEFT-ROTATE}
 \State $x \gets left[y]$
 \State $left[y] \gets right[x]$
 \If {$right[x] \neq \textit{NIL}$}
-\State $p[right[x]] \gets y$
+\State $parent[right[x]] \gets y$
 \EndIf
-\State $p[x] \gets p[y]$
-\If{$p[y] \gets \textit{NIL}$}
+\State $parent[x] \gets parent[y]$
+\If{$parent[y] \gets \textit{NIL}$}
 \State $root[T] \gets x$
-\ElsIf {$y = right[p[y]]$}
-\State $right[p[y]] \gets x$
+\ElsIf {$y = right[parent[y]]$}
+\State $right[parent[y]] \gets x$
 \Else 
-\State $left[p[y]] \gets x$
+\State $left[parent[y]] \gets x$
 \EndIf
 \State $ right[x] \gets y$
-\State $ p[y] \gets x$
-\State $max[x]=MAX(max[left[x]],max[right[x]],max[x])$
-\State $max[y]=MAX(max[left[y]],max[right[y]],max[y])$
-\State $max[p[x]]=MAX(max[left[p[x]]],max[right[p[x]]],max[p[x]])$
+\State $ parent[y] \gets x$
+\State $max[x]=MAX(max[left[x]],max[right[x]],high[x])$
+\State $max[y]=MAX(max[left[y]],max[right[y]],high[y])$
+\State $max[parent[x]]=MAX(max[left[parent[x]]],max[right[parent[x]]],high[parent[x]])$
 \EndProcedure
 \\
 \Procedure{BST-INSERT}{T,z}
@@ -70,7 +74,7 @@
 \State $x \gets right[x]$
 \EndIf
 \EndWhile
-\State $p[z] \gets y$
+\State $parent[z] \gets y$
 \If{$y = \textit{NIL}$}
 \State $root[T] \gets z$ \Comment{ z is the only node}
 \ElsIf{$low[z]<low[y]$}\Comment{setting up the pointers to z}
@@ -91,27 +95,27 @@
 \Procedure{RB-INSERT}{T,x}\Comment{inserting a node in interval(Red Black) tree}
 \State $BST-INSERT(T,x)$ \Comment{First insert x as normally inserted into BST and color it red}
 \State $color[x] \gets RED$
-\While{$ x \neq root[T] \textit{ and } color[p[x]] = RED$}
-\If{$p[x]=left[p[p[x]]]$}
-\State $y \gets right[p[p[x]]]$ \Comment{uncle}
+\While{$ x \neq root[T] \textit{ and } color[parent[x]] = RED$}
+\If{$parent[x]=left[parent[parent[x]]]$}
+\State $y \gets right[parent[parent[x]]]$ \Comment{uncle}
 \If {$color[y] =RED$} \Comment{Case a}
-\State $color[p[x]] \gets BLACK$
+\State $color[parent[x]] \gets BLACK$
 \State $color[y] \gets BLACK$
-\State $color[p[p[x]]] \gets RED$
-\State $x \gets p[p[x]]$ \Comment{Change x to grandparent}
-\ElsIf{$x=right[p[x]]$}\Comment{Case b:Left Right Case}
-\State $x \gets p[x]$
+\State $color[parent[parent[x]]] \gets RED$
+\State $x \gets parent[parent[x]]$ \Comment{Change x to grandparent}
+\ElsIf{$x=right[parent[x]]$}\Comment{Case b:Left Right Case}
+\State $x \gets parent[x]$
 \State $LEFT-ROTATE(T,x)$
-\State $color[p[x]] \gets BLACK$\Comment{Follow Case b: Left Left Case}
-\State $color[p[p[x]]] \gets RED$
-\State $RIGHT-ROTATE[T,p[p[x]]]$
+\State $color[parent[x]] \gets BLACK$\Comment{Follow Case b: Left Left Case}
+\State $color[parent[parent[x]]] \gets RED$
+\State $RIGHT-ROTATE[T,parent[parent[x]]]$
 \Else \Comment{Case b: Left Left Case}
-\State $color[p[x]] \gets BLACK$
-\State $color[p[p[x]]] \gets RED$
-\State $RIGHT-ROTATE[T,p[p[x]]]$
+\State $color[parent[x]] \gets BLACK$
+\State $color[parent[parent[x]]] \gets RED$
+\State $RIGHT-ROTATE[T,parent[parent[x]]]$
 \EndIf
 \Else
-\State (do the same thing in \textbf{then in line 94} clause with "right" and "left" swapped) \Comment{Case b: Right Left and Right Right Case}
+\State (do the same thing in \textbf{then in line 59} clause with "right" and "left" swapped) \Comment{Case b: Right Left and Right Right Case}
 \EndIf
 \EndWhile
 \State $color[root[T]] \gets BLACK$ \Comment{Since root is always black}
@@ -119,41 +123,51 @@
 \EndProcedure
 \\
 \Procedure{RB-DELETE}{T,z}\Comment{Deleting a node in RB-Tree}
-\If {$left[z]=nil[T] \textit{ or } right[z]=nil[T]$}
+\If {$left[z]=nil[T] \textit{ or } right[z]=nil[T]$} \Comment{z has no or 1 child}
 \State $y \gets z$
 \Else
-\State $ y \gets RB-SUCCESSOR(z)$
+\State $ y \gets RB-SUCCESSOR(z)$\Comment{z has 2 children}
 \EndIf
 \If{$left[y] \neq nil[T]$}
 \State $x \gets left[y]$
 \Else
 \State $x \gets right[y]$
 \EndIf
-\State $p[x] \gets p[y]$
-\If{$p[y] =nil[T]$}
+\State $parent[x] \gets parent[y]$\Comment{y gets removed}
+\State $max[parent[x]]=MAX(high[x],high[parent[x]])$\Comment{changed the augmented value}
+\If{$parent[y] =nil[T]$}
 \State $root[T] \gets x$
-\ElsIf{$y = left[p[y]]$}
-\State $left[p[y]] \gets x$
+\ElsIf{$y = left[parent[y]]$}\Comment{reconfiguring the pointers to x}
+\State $left[parent[y]] \gets x$
 \Else
-\State $right[p[y]] \gets x$
+\State $right[parent[y]] \gets x$
 \EndIf
-\If{$y \neq z$}
-\State $low[z] \gets low[y]$
+\If{$y \neq z$}\Comment{z had 2 children}
+\State $low[z] \gets low[y]$\Comment{changed the augmented and key values}
+\State $high[z] \gets high[y]$
+\State $max[z] \gets MAX(high[z],max[left[z]],max[right[z]])$
 \EndIf
-\If{$color[y]=BLACK$}
-\State $RB-DELETE-FIXUP(T,x)$
+\If{$color[y]=BLACK$}\Comment{no change in black height for deleting red }
+\State $RB-DELETE-CORRECTION(T,x)$\Comment{if deleted black, need to check for violations}
 \EndIf
 \Return $y$
 \EndProcedure
 
+\algstore{bkbreak}
+\end{algorithmic}
+\end{algorithm}
+\addtocounter{algorithm}{-1}
+\begin{algorithm}[h]
+\begin{algorithmic}[1]
+\algrestore{bkbreak}
 \Procedure{RB-SUCCESSOR}{x}\Comment{helper for finding successor for a node in tree}
 \If{$right[x] \neq NIL$}
 \Return $RB-MINIMUM(right[x])$
 \EndIf
-\State $ y \gets p[x]$
+\State $ y \gets parent[x]$
 \While{$y \neq NIL \textit{ and }x =right[y]$}
 \State $ x \gets y$
-\State $ y\gets p[y]$
+\State $ y\gets parent[y]$
 \EndWhile
 \Return $y$
 \\
@@ -164,41 +178,40 @@
 \Return $x$
 \EndProcedure
 \\
-\algstore{bkbreak}
-\end{algorithmic}
-\end{algorithm}
-\addtocounter{algorithm}{-1}
-\begin{algorithm}[h]
-\begin{algorithmic}[1]
-\algrestore{bkbreak}
+
 \EndProcedure
-\Procedure{RB-DELETE-FIXUP}{T,x}
+\Procedure{RB-DELETE-CORRECTION}{T,x}
 \While{$ x \neq root[T] \textit{ and } color[x]=BLACK$}
-\If{$x=left[p[x]]$}
-\State $w \gets right[p[x]]$
-\If{$color[x]=RED$}
-\State $color[w] \gets BLACK$
-\State $color[p[x] \gets RED$
-\State $LEFT-ROTATE(T,p[x])$
-\State $w \gets right[p[x]]$
+\If{$x=left[parent[x]]$}\Comment{assume x has double black}
+\State $w \gets right[parent[x]]$\Comment{Old Sibling}
+\If{$color[w]=RED$}
+\State $color[w] \gets BLACK$\Comment{Recolour old sibling and parent}
+\State $color[parent[x] \gets RED$
+\State $LEFT-ROTATE(T,parent[x])$
+\State $w \gets right[parent[x]]$
 \EndIf
-\If{$color[left[w]]=BLACK \textit{ and } color[right[w]]=BLACK$}
+\If{$color[left[w]]=BLACK \textit{ and } color[right[w]]=BLACK$}\Comment{both the children of siblings are black}
 \State $color[w] \gets RED$
-\State $ x \gets p[x]$
-\ElsIf{$color[right[w]]=BLACK$}
-\State $color[left[w] \gets BLACK$
+\State $ x \gets parent[x]$\Comment{will recur for parent}
+\ElsIf{$color[right[w]]=BLACK$}\Comment{one of the children of sibling is red}
+\State $color[left[w]] \gets BLACK$\Comment{Right Left Case}
 \State $color[w] \gets RED$
 \State $ RIGHT-ROTATE(T,w)$
-\State $w \gets right[p[x]]$
-\Else
-\State $color[w] \gets color[p[x]]$
-\State $color[p[x]] \gets BLACK$
+\State $w \gets right[parent[x]]$
+\State $color[w] \gets color[parent[x]]$
+\State $color[parent[x]] \gets BLACK$
 \State $color[right[w]] \gets BLACK$
-\State $LEFT-ROTATE(T,p[x])$
+\State $LEFT-ROTATE(T,parent[x])$
+\State $x \gets root(T)$
+\Else \Comment{Right Right Case}
+\State $color[w] \gets color[parent[x]]$
+\State $color[parent[x]] \gets BLACK$
+\State $color[right[w]] \gets BLACK$
+\State $LEFT-ROTATE(T,parent[x])$
 \State $x \gets root(T)$
 \EndIf
 \Else
-\State (same as \textbf{then} clause with "right" and "left" exchanged)
+\State (do the same thing in \textbf{then in line 116} clause with "right" and "left" swapped) \Comment{Case b: Left Left and Left Right Case}
 \EndIf
 \EndWhile
 \State $color[x] \gets BLACK$
